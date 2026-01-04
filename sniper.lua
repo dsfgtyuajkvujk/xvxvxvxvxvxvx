@@ -1,6 +1,6 @@
 local notif = loadstring(game:HttpGet("https://raw.githubusercontent.com/insanedude59/notiflib/main/main"))()
 
-notif:Notification("fortune.lua","Aimbot/ESP V1 Loaded!","GothamSemibold","Gotham",5)
+notif:Notification("fortune.lua","Aimbot/ESP V1 Loaded!","GothamSemibold","Gotham",5) -- title: <string> description: <string> title font: <string> description font: <string> notification show time: <number>
 
 -- Control Settings
 local Settings = {
@@ -9,10 +9,10 @@ local Settings = {
         Teamcheck = false;
         Transparency = .7;
         IgnoreDead = true;
-        EnemyColor = Color3.fromRGB(0, 0, 0);  -- Black color
-        EnemyColorRainbow = false;  -- Disable rainbow
-        TeamColor = Color3.fromRGB(255, 255, 255);  -- White color
-        TeamColorRainbow = false;  -- Disable rainbow
+        EnemyColor = Color3.fromRGB(0, 0, 0);
+        EnemyColorRainbow = false;
+        TeamColor = Color3.fromRGB(255, 255, 255);
+        TeamColorRainbow = false;
     };
 
     Aimbot = {
@@ -22,8 +22,8 @@ local Settings = {
         VisibleCheck = true;
         TimeToTarget = .3;
         Teamcheck = true;
-        Color = Color3.fromRGB(0, 0, 0);  -- Black color
-        Rainbow = false;  -- Disable rainbow
+        Color = Color3.fromRGB(0, 0, 0);
+        Rainbow = false;
     }
 }
 
@@ -124,6 +124,7 @@ function AddPlayerHighlight(player)
         hl.Adornee = character
     end)
     table.insert(Internals.Connections, con)
+
 end
 
 function RemovePlayerHighlight(player)
@@ -135,13 +136,14 @@ end
 
 function UpdatePlayerHighlight(player)
     local hl = Internals.Highlights[player.Name]
+    local rainbowColor = Color3.fromRGB(0, 0, 0)
     local color = nil
     local isTeammate = IsTeammate(player)
 
     if(isTeammate and Settings.Highlight.TeamColorRainbow) then
-        color = Settings.Highlight.TeamColor  -- Just set it to the solid TeamColor (no rainbow)
+        color = rainbowColor
     elseif(not isTeammate and Settings.Highlight.EnemyColorRainbow) then
-        color = Settings.Highlight.EnemyColor  -- Just set it to the solid EnemyColor (no rainbow)
+        color = rainbowColor
     else
         color = (isTeammate) and Settings.Highlight.TeamColor or Settings.Highlight.EnemyColor
     end
@@ -152,7 +154,7 @@ function UpdatePlayerHighlight(player)
             hl.OutlineTransparency = 1
             return
         end
-        color = Color3.fromRGB(0, 0, 0)  -- Dead player highlight
+        color = Color3.fromRGB(0, 0, 0)
     end
 
     hl.FillTransparency = (isTeammate and Settings.Highlight.Teamcheck) and 1 or Settings.Highlight.Transparency
@@ -166,18 +168,18 @@ function FindClosestPlayer()
     local closestPlayer = nil
     local closestDist = nil
 
-    for _, v in pairs(PlayersService:GetPlayers()) do
+    for _, v in pairs(PlayersService:GetPlayers()) do 
         if((Settings.Aimbot.Teamcheck and IsTeammate(v)) or (v == LocalPlayer) or (v.Character == nil) or (v.Character:FindFirstChild(Settings.Aimbot.TargetPart) == nil)) then continue end
         if(not v.Character:FindFirstChild('Humanoid') or v.Character:FindFirstChild('Humanoid').Health == 0) then continue end
 
         local screenPoint, _ = WorldToScreen(Camera, v.Character:FindFirstChild(Settings.Aimbot.TargetPart).CFrame.Position)
         if(screenPoint.Z < 0) then continue end
-        if(Settings.Aimbot.VisibleCheck and not IsVisible(v)) then continue end
+        if(Settings.Aimbot.VisibleCheck and not IsVisible(v)) then continue end;
 
         local dist = (Vector2.new(Mouse.X, Mouse.Y) - Vector2.new(screenPoint.X, screenPoint.Y)).Magnitude
         if(dist > Settings.Aimbot.Radius) then continue end
 
-        if(closestPlayer == nil) then
+        if(closestPlayer == nil) then 
             closestPlayer = v
             closestDist = dist
             continue
@@ -192,18 +194,42 @@ function FindClosestPlayer()
     return closestPlayer
 end
 
+function IsVisible(player)
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+    raycastParams.FilterDescendantsInstances = {player.Character, LocalPlayer.Character}
+
+    local origin = Camera.CFrame.Position
+    local target = player.Character:FindFirstChild(Settings.Aimbot.TargetPart).Position
+    local result = WorkspaceService:Raycast(origin, (target-origin), raycastParams)
+
+    if(result == nil) then
+        return true
+    end
+
+    return false
+end
+
 -- Main
 
--- Setup Highlight
+-- Rerun script on teleport
+local con = LocalPlayer.OnTeleport:Connect(function(state)
+    queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/AshtonsAlt/Roblox/refs/heads/main/Games/Rivials.lua"))
+    con:Disconnect()
+    table.remove(Internals.Connections, con)
+end)
+table.insert(Internals.Connections, con)
+
+-- Settup Highlight
 if(Settings.Highlight.Enabled) then
-    -- Setup existing players
+    -- Settup existing players
     for _, v in pairs(PlayersService:GetPlayers()) do
         if(v == LocalPlayer) then continue end
 
         AddPlayerHighlight(v)
     end
 
-    -- Setup new players
+    -- Settup new players
     local con = PlayersService.PlayerAdded:Connect(AddPlayerHighlight)
     table.insert(Internals.Connections, con)
 
@@ -212,7 +238,7 @@ if(Settings.Highlight.Enabled) then
     table.insert(Internals.Connections, con)
 end
 
--- Setup Aimbot
+-- Settup Aimbot
 if(Settings.Aimbot.Enabled) then
     local fovDrawing = Drawing.new('Circle')
     fovDrawing.Transparency = 1
@@ -220,7 +246,7 @@ if(Settings.Aimbot.Enabled) then
     fovDrawing.NumSides = 100
     fovDrawing.Radius = Settings.Aimbot.Radius
     fovDrawing.Filled = false
-    fovDrawing.Color = Color3.fromRGB(0, 0, 0)  -- Black color
+    fovDrawing.Color = Color3.fromRGB(0,0,0)
     fovDrawing.Position = Vector2.new(100, 100)
     fovDrawing.Visible = true
     Internals.Aimbot.FovDrawing = fovDrawing
@@ -236,4 +262,61 @@ if(Settings.Aimbot.Enabled) then
         Internals.Aimbot.ElapsedTime = 0
         Internals.Aimbot.Target = nil;
     end)
-   
+    table.insert(Internals.Connections, con)
+
+    local con = Mouse.Move:Connect(function()
+        fovDrawing.Position = Vector2.new(Mouse.X, Mouse.Y + GuiInset.Y)
+    end)
+    table.insert(Internals.Connections, con)
+end
+
+-- Main Loop
+local con = RunService.RenderStepped:Connect(function(dt)
+    -- Update player highlight
+    for i, v in pairs(Internals.Highlights) do
+        local player = PlayersService:FindFirstChild(i)
+        if player == nil then continue end
+
+        UpdatePlayerHighlight(player)
+    end
+
+    -- Aimbot
+    if(Settings.Aimbot.Enabled) then
+        -- Update aimbot visuals
+        if(Settings.Aimbot.Rainbow) then
+            Internals.Aimbot.FovDrawing.Color = Color3.fromRGB(0, 0, 0)
+        end
+
+        -- Move mouse
+        if(Internals.Aimbot.On) then
+            local alpha = math.clamp(Internals.Aimbot.ElapsedTime / Settings.Aimbot.TimeToTarget, 0, 1)
+            local targetPlayer = Internals.Aimbot.Target
+
+            if(targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild(Settings.Aimbot.TargetPart) and targetPlayer:FindFirstChild('Humanoid') and targetPlayer:FindFirstChild('Humanoid').Health > 0) then
+                targetPlayer = Internals.Aimbot.Target
+            else
+                targetPlayer = FindClosestPlayer()
+            end
+
+            if(targetPlayer) then
+                Internals.Aimbot.Target = targetPlayer
+                Internals.Aimbot.ElapsedTime += dt
+
+                local targetPart = targetPlayer.Character:FindFirstChild(Settings.Aimbot.TargetPart)
+                local screenPoint, visible = WorldToScreen(Camera, targetPart.CFrame.Position)
+                
+                if((Settings.Aimbot.VisibleCheck and IsVisible(targetPlayer)) or not Settings.Aimbot.VisibleCheck) then 
+                    local mouseDelta = Vector2.new(screenPoint.X - Mouse.X, screenPoint.Y - Mouse.Y)
+                    mousemoverel(mouseDelta.X * alpha, mouseDelta.Y * alpha)
+                end
+            else
+                Internals.Aimbot.ElapsedTime = 0
+            end
+        end
+    end
+
+    task.wait()
+end)
+table.insert(Internals.Connections, con)
+
+print('Script Loaded' )
