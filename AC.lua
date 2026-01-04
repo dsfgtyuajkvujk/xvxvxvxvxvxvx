@@ -73,17 +73,6 @@ Player.CharacterAdded:Connect(function(NewCharacater)
   Humanoid = Character:WaitForChild("HumanoidRootPart")
 end)
 
-Player.OnTeleport:Connect(function()
-	if game.PlaceId == 87039211657390 then
-		queue_on_teleport([[
-      task.spawn(function()
-        task.wait(5)
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/dsfgtyuajkvujk/xvxvxvxvxvxvx/refs/heads/main/Loader.lua"))()
-      end)
-    ]])
-	end
-end)
-
 local AllMobWorlds = {
 	["SoloWorld"] = {"Soondoo", "Gonshee", "Daek", "Longin", "Anders", "Largalgan"},
 	["NarutoWorld"] = {"Snake Man", "Blossom", "Black Crow"},
