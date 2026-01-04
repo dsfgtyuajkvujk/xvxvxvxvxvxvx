@@ -74,7 +74,7 @@ Player.CharacterAdded:Connect(function(NewCharacater)
 end)
 
 Player.OnTeleport:Connect(function()
-	if game.GameId == 87039211657390 then
+	if game.PlaceId == 87039211657390 then
 		queue_on_teleport([[
       task.spawn(function()
         task.wait(5)
