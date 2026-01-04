@@ -1,6 +1,6 @@
 local Games = {
   [87039211657390] = "https://raw.githubusercontent.com/dsfgtyuajkvujk/xvxvxvxvxvxvx/refs/heads/main/AC.lua", -- Blox Fruit Sea 1
-  [0] = "", -- Blox Fruit Sea 2
+  [124387865885397] = "https://raw.githubusercontent.com/dsfgtyuajkvujk/xvxvxvxvxvxvx/refs/heads/main/merge.lua", -- Blox Fruit Sea 2
   [0] = "", -- Blox Fruit Sea 3
   [0] = "", -- Muscle Legends
   [0] = "",  -- PS99 World 1
