@@ -126,7 +126,7 @@ local themeStyles = {
         TextColor = Color3.fromRGB(255, 255, 255),
         ElementColor = Color3.fromRGB(44, 44, 44)
     },
-    fortune = {
+    Fortune = {
         SchemeColor = Color3.fromRGB(255, 0, 0),
         Background = Color3.fromRGB(20, 20, 20),
         Header = Color3.fromRGB(20, 20, 20),
@@ -199,8 +199,8 @@ function KavoCustom.CreateLib(kavName, themeList)
         themeList = themeStyles.Religion
     elseif themeList == "BlueEngine" then
         themeList = themeStyles.BlueEngine
-    elseif themeList == "fortune" then
-        themeList = themeStyles.fortune
+    elseif themeList == "Fortune" then
+        themeList = themeStyles.Fortune
     elseif themeList == "PastelPink" then
         themeList = themeStyles.PastelPink
     elseif themeList == "Serpent" then
